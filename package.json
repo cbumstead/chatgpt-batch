@@ -1,7 +1,8 @@
 {
-  "name": "chatgpt-batch-refactor",
+  "name": "vscode-chatgpt-batch-refactor",
+  "publisher": "Chad Bumstead",
   "displayName": "ChatGPT Batch Refactor",
-  "description": "Ask ChatGPT to perform multi-file refactoring",
+  "description": "Ask ChatGPT to perform multi-file batch refactoring",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.76.0"
@@ -16,7 +17,11 @@
       {
         "command": "chatgptBatchRefactor.refactorSelected",
         "title": "Refactor Files with ChatGPT"
-      }
+      },
+      {
+				"command": "chatgptBatchRefactor.changeOpenAIAPIKey",
+				"title": "ChatGPT Batch Refactor: Change OpenAI API key"
+			}
     ],
     "menus": {
       "explorer/context": [
