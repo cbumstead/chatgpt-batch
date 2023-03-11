@@ -14,12 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "chatgptBatch.chat",
-        "title": "Batch"
-      },
-      {
         "command": "chatgptBatchRefactor.refactorSelected",
-        "title": "Refactor selected files/folders"
+        "title": "Refactor Files with ChatGPT"
       }
     ],
     "menus": {
