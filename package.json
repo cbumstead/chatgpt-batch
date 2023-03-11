@@ -1,6 +1,6 @@
 {
-  "name": "chatgpt-batch",
-  "displayName": "ChatGPT Pro",
+  "name": "chatgpt-batch-refactor",
+  "displayName": "ChatGPT Batch Refactor",
   "description": "Ask ChatGPT to perform multi-file refactoring",
   "version": "0.0.1",
   "engines": {
@@ -14,10 +14,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "chatgpt-batch.chat",
+        "command": "chatgptBatch.chat",
         "title": "Batch"
+      },
+      {
+        "command": "chatgptBatchRefactor.refactorSelected",
+        "title": "Refactor selected files/folders"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "chatgptBatchRefactor.refactorSelected",
+          "group": "chatgptBatchRefactor.group",
+          "when": "explorerResourceIsFolder || explorerResourceIsFile"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

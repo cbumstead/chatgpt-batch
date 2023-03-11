@@ -17,19 +17,19 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "ChatGPT Pro" is now active!');
+	console.log('Congratulations, your extension "ChatGPT Batch Refactor" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('chatgpt-batch.chat', async () => {
+	let disposable = vscode.commands.registerCommand('chatgpt-batch-refactor.chat', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Welcome to ChatGPT Pro!');
+		vscode.window.showInformationMessage('Welcome to ChatGPT Batch Refactor!');
 
         const defaultPrompt = "Refactor the persons data folder to use Typescript and Prisma.";
 
-        const input = await vscode.window.showInputBox({ prompt: 'Enter your instructions for ChatGPT Pro', value: defaultPrompt }) ?? defaultPrompt;
+        const input = await vscode.window.showInputBox({ prompt: 'Enter your instructions for ChatGPT Batch Refactor', value: defaultPrompt }) ?? defaultPrompt;
 
         const messages: ChatCompletionRequestMessage[] = [
             {"role": "system", "content": "You are a ChatGPT vs code extension that can do multi-file refactoring. When you receive a request to refactor code always put any notes in code comments so the file will still build."},
@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         try {
 
-            //vscode.window.showInformationMessage('ChatGPT Pro is working on your request to ' + input);
+            //vscode.window.showInformationMessage('ChatGPT Batch Refactor is working on your request to ' + input);
 
             // const completion = await openai.createChatCompletion({
             //     model: 'gpt-3.5-turbo',
@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
             // TODO: Find the files to refactor
             const files = await vscode.workspace.findFiles('**/data/persons/**', '**/node_modules/**');
 
-            vscode.window.showInformationMessage('ChatGPT Pro found ' + files.length + ' files to refactor');
+            vscode.window.showInformationMessage('ChatGPT Batch Refactor found ' + files.length + ' files to refactor');
 
             // For each file, ask ChatGPT to the refactoring
             for (const file of files) {
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
                 break; // Only run on one file for now
             }    
 
-            vscode.window.showInformationMessage('ChatGPT Pro has finished your request to ' + input);
+            vscode.window.showInformationMessage('ChatGPT Batch Refactor has finished your request to ' + input);
 
         } catch (error) {
             console.error(error);
