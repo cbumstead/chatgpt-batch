@@ -45,11 +45,17 @@ export function activate(context: vscode.ExtensionContext) {
         };
         const uris = await vscode.window.showOpenDialog(options);
         if (uris) {
-            vscode.window.showInformationMessage('ChatGPT Batch Refactor found ' + uris.length + ' files to refactor');
+            vscode.window.showInformationMessage('Enter instructions above.   Found ' + uris.length + ' files to refactor');
 
             const defaultPrompt = "Refactor to use Typescript and Prisma.";
 
-            const input = await vscode.window.showInputBox({ prompt: 'Enter your instructions for ChatGPT Batch Refactor', value: defaultPrompt }) ?? defaultPrompt;
+            const input = await vscode.window.showInputBox({ 
+                prompt: 'Enter your instructions for ChatGPT Batch Refactor', 
+                value: defaultPrompt,
+                ignoreFocusOut: true }) ?? defaultPrompt;
+
+
+            vscode.window.showInformationMessage('ChatGPT Refactor is now refactoring.  Please wait.');
 
             const messages: ChatCompletionRequestMessage[] = [
                 {"role": "system", "content": "You are a ChatGPT vs code extension that can do multi-file refactoring. When you receive a request to refactor code always put any notes in code comments so the file will still build."},
@@ -76,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
                     break; //TODO: Only run on one file for now
                 }    
 
-                vscode.window.showInformationMessage('ChatGPT Batch Refactor has finished your request to ' + input);
+                vscode.window.showInformationMessage('ChatGPT Batch Refactor has finished your request.');
 
             } catch (error) {
                 vscode.window.showInformationMessage('ChatGPT Batch Refactor failed to refactor your code.  Check your API key and try again.');
