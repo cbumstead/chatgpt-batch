@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 async function getOpenAIKey(context: vscode.ExtensionContext, forceChange: boolean = false): Promise<string> {
@@ -22,11 +21,13 @@ async function getOpenAIKey(context: vscode.ExtensionContext, forceChange: boole
 }
 
 async function promptForInstructions(defaultPrompt: string): Promise<string> {
-    return await vscode.window.showInputBox({
+    const instructions = await vscode.window.showInputBox({
         prompt: 'Enter your instructions for ChatGPT Batch Refactor',
         value: defaultPrompt,
         ignoreFocusOut: true
-    }) ?? defaultPrompt;
+    });
+
+    return instructions ?? defaultPrompt;
 }
 
 async function promptForFilesToRefactor(context: any): Promise<vscode.Uri[] | undefined> {
@@ -77,19 +78,22 @@ export function activate(context: vscode.ExtensionContext) {
         });
         const openai = new OpenAIApi(configuration);
         const uris = await promptForFilesToRefactor(ctx);
-        if (uris) {
-            const instructions = await promptForInstructions("Refactor to use Typescript and Prisma.");
-            showInformationMessage(`Enter instructions above. Found ${uris.length} files to refactor`);
-            showInformationMessage('ChatGPT is now refactoring. Please wait.');
-            let successCount = 0;
-            for (const uri of uris) {
-                const success = await refactorFile(uri, openai, instructions);
-                if (success) {
-                    successCount++;
-                }
-            }
-            showInformationMessage(`ChatGPT refactored ${successCount} files.`);
+        if(!uris) {
+            showInformationMessage('No files selected for refactoring');
+            return;
         }
+
+        const instructions = await promptForInstructions("Refactor to use Typescript and Prisma.");
+        showInformationMessage(`Enter instructions above. Found ${uris.length} files to refactor`);
+        showInformationMessage('ChatGPT is now refactoring. Please wait.');
+        let successCount = 0;
+        for (const uri of uris) {
+            const success = await refactorFile(uri, openai, instructions);
+            if (success) {
+                successCount++;
+            }
+        }
+        showInformationMessage(`ChatGPT refactored ${successCount} files.`);
     });
 
     const updateOpenAIKey = vscode.commands.registerCommand(
