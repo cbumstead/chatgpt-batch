@@ -4,98 +4,98 @@ import * as vscode from 'vscode';
 
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+async function getOpenAIKey(context: vscode.ExtensionContext, forceChange: boolean = false): Promise<string> {
+    const oldOpenAIKey = await context.secrets.get("openAIKey");
+    if (oldOpenAIKey && !forceChange) {
+        return oldOpenAIKey;
+    }
+    const key = await vscode.window.showInputBox({
+        title: "OpenAI API Key",
+        prompt: "Enter your OpenAI API key",
+        ignoreFocusOut: true,
+    });
+    if (!key) {
+        return "";
+    }
+    context.secrets.store("openAIKey", key);
+    return key;
+}
 
-    const getOpenAIKey = async (forceChange: boolean = false) => {
-		const secrets = context.secrets;
-		const oldOpenAIKey = await secrets.get("openAIKey");
-		if (oldOpenAIKey && !forceChange) {
-			return oldOpenAIKey;
-		}
-		const key = await vscode.window.showInputBox({
-			title: "OpenAI API Key",
-			prompt: "Enter your OpenAI API key",
-			ignoreFocusOut: true,
-		});
-		if (!key) {
-			return "";
-		}
-		secrets.store("openAIKey", key);
-		return key;
-	};
+async function promptForInstructions(defaultPrompt: string): Promise<string> {
+    return await vscode.window.showInputBox({
+        prompt: 'Enter your instructions for ChatGPT Batch Refactor',
+        value: defaultPrompt,
+        ignoreFocusOut: true
+    }) ?? defaultPrompt;
+}
 
-    const command = 'chatgptBatchRefactor.refactorSelected';
-    const refactorCommand = vscode.commands.registerCommand(command, async (ctx) => {
-        const apiKey = await getOpenAIKey();
-        const configuration = new Configuration({
-            apiKey: apiKey,
-          });
-        const openai = new OpenAIApi(configuration);
-
-        const options: vscode.OpenDialogOptions = {
+async function promptForFilesToRefactor(context: any): Promise<vscode.Uri[] | undefined> {
+    const options: vscode.OpenDialogOptions = {
         canSelectMany: true,
         openLabel: 'Refactor',
         // set the defaultUri to the selected folder
-        defaultUri: ctx?.fsPath ? vscode.Uri.file(ctx.fsPath) : undefined,
+        defaultUri: context?.fsPath ? vscode.Uri.file(context.fsPath) : undefined,
         filters: {
             'All files': ['*']
         },
-        };
-        const uris = await vscode.window.showOpenDialog(options);
+    };
+    return vscode.window.showOpenDialog(options);
+}
+
+async function refactorFile(uri: vscode.Uri, openai: OpenAIApi, instructions: string): Promise<boolean> {
+    showInformationMessage(`Refactoring file ${uri.fsPath}`);
+    const fileContent = await vscode.workspace.fs.readFile(uri);
+    const messages: ChatCompletionRequestMessage[] = [
+        {"role": "system", "content": "Pretend you are a professional software architect that can do code refactoring.  You will receive specific requests to refactor code. You will always explain why you chose to make the changes you did in the refactoring. Include these explanations inline with the code in comments each line beginning with //."},
+        {"role": "user", "content": instructions },
+        {"role": "user", "content": fileContent.toString()},
+    ];
+    try {
+        const response = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: messages
+        });
+        const content = response.data.choices[0].message?.content;
+        if (content) {
+            const refactoredContent = refactorGraphQL(content);
+            await vscode.workspace.fs.writeFile(uri, Buffer.from(refactoredContent));
+            return true;
+        }
+    } catch (error) {
+        showInformationMessage(`Error refactoring file ${uri.fsPath}`);
+        console.error(error);
+    }
+    return false;
+}
+
+export function activate(context: vscode.ExtensionContext) {
+    const refactorCommand = vscode.commands.registerCommand('chatgptBatchRefactor.refactorSelected', 
+    async (ctx) => {
+        const apiKey = await getOpenAIKey(context);
+        const configuration = new Configuration({
+            apiKey: apiKey,
+        });
+        const openai = new OpenAIApi(configuration);
+        const uris = await promptForFilesToRefactor(ctx);
         if (uris) {
-            vscode.window.showInformationMessage('Enter instructions above.   Found ' + uris.length + ' files to refactor');
-
-            const defaultPrompt = "Refactor to use Typescript and Prisma.";
-
-            const input = await vscode.window.showInputBox({ 
-                prompt: 'Enter your instructions for ChatGPT Batch Refactor', 
-                value: defaultPrompt,
-                ignoreFocusOut: true }) ?? defaultPrompt;
-
-
-            vscode.window.showInformationMessage('ChatGPT is now refactoring.  Please wait.');
-
-            const messages: ChatCompletionRequestMessage[] = [
-                {"role": "system", "content": "Pretend you are a professional software architect that can do code refactoring.  You will receive specific requests to refactor code. You will always explain why you chose to make the changes you did in the refactoring. Include these explanations inline with the code in comments each line beginning with //."},
-                {"role": "user", "content": input },
-            ];
- 
-            try {
-                // For each file, ask ChatGPT to the refactoring
-                for (const uri of uris) { 
-                    // Read the file
-                    const fileContent = await vscode.workspace.fs.readFile(uri);
-                    // Ask ChatGPT to refactor the file
-                    const response = await openai.createChatCompletion({
-                        model: 'gpt-3.5-turbo',
-                        messages:[ ...messages,
-                            {"role": "assistant", "content": fileContent.toString()},
-                    ]});
-                    console.log(response.data.choices[0].message?.content);
-                    if(response.data.choices[0].message?.content){
-                        const content = refactorGraphQL(response.data.choices[0].message.content);
-                        // Write the refactored file
-                        await vscode.workspace.fs.writeFile(uri, Buffer.from(content));
-                    }
-                    break; //TODO: Only run on one file for now
-                }    
-
-                vscode.window.showInformationMessage('ChatGPT Batch Refactor has finished your request.');
-
-            } catch (error) {
-                vscode.window.showInformationMessage('ChatGPT Batch Refactor failed to refactor your code.  Check your API key and try again.');
-                console.error(error);
+            const instructions = await promptForInstructions("Refactor to use Typescript and Prisma.");
+            showInformationMessage(`Enter instructions above. Found ${uris.length} files to refactor`);
+            showInformationMessage('ChatGPT is now refactoring. Please wait.');
+            let successCount = 0;
+            for (const uri of uris) {
+                const success = await refactorFile(uri, openai, instructions);
+                if (success) {
+                    successCount++;
+                }
             }
-
-            }
+            showInformationMessage(`ChatGPT refactored ${successCount} files.`);
+        }
     });
 
     const updateOpenAIKey = vscode.commands.registerCommand(
 		"chatgptBatchRefactor.changeOpenAIAPIKey",
 		async () => {
-			await getOpenAIKey(true);
+			await getOpenAIKey(context, true);
 		},
 	);
 
@@ -103,6 +103,10 @@ export function activate(context: vscode.ExtensionContext) {
 		updateOpenAIKey,
         refactorCommand
 	);
+}
+
+function showInformationMessage(message: string) {
+    vscode.window.showInformationMessage(message);
 }
 
 // Function to handle the GraphQL refactoring request
