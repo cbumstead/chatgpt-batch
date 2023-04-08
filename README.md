@@ -1,71 +1,47 @@
-# chatgpt-batch README
+# ChatGPT Batch Processor for VSCode
 
-This is the README for your extension "chatgpt-batch". After writing up a brief description, we recommend including the following sections.
+This Visual Studio Code extension uses ChatGPT to process a batch of files based on user instructions.  This is a great tool for refactoring code, but it can also be used for other purposes.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example, if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Process a batch of files using ChatGPT
+- Change your OpenAI API key
+- Uses ChatGPT to provide refactoring suggestions
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Visual Studio Code
+- OpenAI API Key
+
+## Installation
+
+1. Download the extension and unzip the contents to your `.vscode/extensions` folder.
+2. Restart Visual Studio Code if it was open.
+
+## Usage
+
+1. Open a folder or workspace containing the files you want to process in Visual Studio Code.
+2. Right-click on a folder in the file explorer and choose "ChatGPT Batch Process Selected" from the context menu.
+3. Enter your OpenAI API key if prompted.
+4. Choose the files you want to process.
+5. Enter your instructions for ChatGPT, e.g. "Refactor to use Typescript and Prisma."
+6. Wait for the processing to finish, and review the results in the processed files.
+
+## Commands
+
+- `chatgptBatch.processSelected`: Processes the selected folder or files with ChatGPT based on user instructions.
+- `chatgptBatch.changeOpenAIAPIKey`: Changes the stored OpenAI API key.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+No settings are required.
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+None at the moment.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release of the ChatGPT Batch Processor for Visual Studio Code.
