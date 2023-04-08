@@ -24,7 +24,7 @@ export async function getOpenAIKey(
 
 export async function promptForInstructions(defaultPrompt: string): Promise<string> {
   const instructions = await vscode.window.showInputBox({
-    prompt: 'Enter your instructions for ChatGPT Batch Refactor',
+    prompt: 'Enter your instructions for ChatGPT Batch',
     value: defaultPrompt,
     ignoreFocusOut: true,
   });
@@ -32,10 +32,10 @@ export async function promptForInstructions(defaultPrompt: string): Promise<stri
   return instructions ?? defaultPrompt;
 }
 
-export async function promptForFilesToRefactor(context: any): Promise<vscode.Uri[] | undefined> {
+export async function promptForFilesToProcess(context: any): Promise<vscode.Uri[] | undefined> {
   const options: vscode.OpenDialogOptions = {
     canSelectMany: true,
-    openLabel: 'Refactor',
+    openLabel: 'Process',
     // set the defaultUri to the selected folder
     defaultUri: context?.fsPath ? vscode.Uri.file(context.fsPath) : undefined,
     filters: {
@@ -45,12 +45,12 @@ export async function promptForFilesToRefactor(context: any): Promise<vscode.Uri
   return vscode.window.showOpenDialog(options);
 }
 
-export async function refactorFile(
+export async function processFile(
   uri: vscode.Uri,
   openai: OpenAIApi,
   instructions: string,
 ): Promise<boolean> {
-  showInformationMessage(`Refactoring file ${uri.fsPath}`);
+  showInformationMessage(`Processing file ${uri.fsPath}`);
   const fileContent = await vscode.workspace.fs.readFile(uri);
   const messages: ChatCompletionRequestMessage[] = [
     {
@@ -68,62 +68,62 @@ export async function refactorFile(
     });
     const content = response.data.choices[0].message?.content;
     if (content) {
-      const refactoredContent = refactorGraphQL(content);
-      await vscode.workspace.fs.writeFile(uri, Buffer.from(refactoredContent));
+      const processedContent = handleChatGptResponse(content);
+      await vscode.workspace.fs.writeFile(uri, Buffer.from(processedContent));
       return true;
     }
   } catch (error) {
-    showInformationMessage(`Error refactoring file ${uri.fsPath}`);
+    showInformationMessage(`Error processing file ${uri.fsPath}`);
     console.error(error);
   }
   return false;
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  const refactorCommand = vscode.commands.registerCommand(
-    'chatgptBatchRefactor.refactorSelected',
+  const processCommand = vscode.commands.registerCommand(
+    'chatgptBatch.processSelected',
     async (ctx) => {
       const apiKey = await getOpenAIKey(context);
       const configuration = new Configuration({
         apiKey: apiKey,
       });
       const openai = new OpenAIApi(configuration);
-      const uris = await promptForFilesToRefactor(ctx);
+      const uris = await promptForFilesToProcess(ctx);
       if (!uris) {
-        showInformationMessage('No files selected for refactoring');
+        showInformationMessage('No files selected for processing.');
         return;
       }
 
       const instructions = await promptForInstructions('Refactor to use Typescript and Prisma.');
-      showInformationMessage(`Enter instructions above. Found ${uris.length} files to refactor`);
-      showInformationMessage('ChatGPT is now refactoring. Please wait.');
+      showInformationMessage(`Enter instructions above. Found ${uris.length} files to process.`);
+      showInformationMessage('ChatGPT is now processing. Please wait.');
       let successCount = 0;
       for (const uri of uris) {
-        const success = await refactorFile(uri, openai, instructions);
+        const success = await processFile(uri, openai, instructions);
         if (success) {
           successCount++;
         }
       }
-      showInformationMessage(`ChatGPT refactored ${successCount} files.`);
+      showInformationMessage(`ChatGPT processed ${successCount} files.`);
     },
   );
 
   const updateOpenAIKey = vscode.commands.registerCommand(
-    'chatgptBatchRefactor.changeOpenAIAPIKey',
+    'chatgptBatch.changeOpenAIAPIKey',
     async () => {
       await getOpenAIKey(context, true);
     },
   );
 
-  context.subscriptions.push(updateOpenAIKey, refactorCommand);
+  context.subscriptions.push(updateOpenAIKey, processCommand);
 }
 
 function showInformationMessage(message: string) {
   vscode.window.showInformationMessage(message);
 }
 
-// Function to handle the GraphQL refactoring request
-export function refactorGraphQL(content: string): string {
+// Function to handle the ChatGPT process response
+export function handleChatGptResponse(content: string): string {
   // There are two types of code blocks in the response:
 
   // The first format has a single comment line and a empty line before the code block
