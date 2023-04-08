@@ -1,14 +1,18 @@
 {
   "name": "vscode-chatgpt-batch",
-  "publisher": "Chad Bumstead",
+  "publisher": "ChadBumstead",
   "displayName": "ChatGPT Batch",
   "description": "Ask ChatGPT to perform multi-file batch changes such as code refactoring",
   "version": "0.0.1",
+  "icon": "images/chatgpt.png",
   "engines": {
     "vscode": "^1.76.0"
   },
   "categories": [
-    "Other"
+     "Other"
+  ],
+  "keywords": [
+    "ChatGPT", "Batch", "Refactoring", "Code", "OpenAI"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
