@@ -16,6 +16,7 @@
     "type": "git",
     "url": "https://github.com/cbumstead/chatgpt-batch"
   },
+  "license": "MIT",
   "contributes": {
     "commands": [
       {
