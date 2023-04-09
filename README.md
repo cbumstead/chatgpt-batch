@@ -1,22 +1,37 @@
-# ChatGPT Batch Processor for VSCode
+# ChatGPT Batch Processor
 
 This Visual Studio Code extension uses ChatGPT to process a batch of files based on user instructions.  This is a great tool for refactoring code, but it can also be used for other purposes.
 
 ## Features
 
+- Choose which files to process
+- Instruct ChatGPT changes to make to the files
 - Process a batch of files using ChatGPT
-- Change your OpenAI API key
-- Uses ChatGPT to provide refactoring suggestions
+- Uses ChatGPT to provide refactoring
 
-## Requirements
+## Authentication
 
-- Visual Studio Code
-- OpenAI API Key
+When you first use ChatGPT, you will need to provide an OpenAI API key. This key is necessary for the extension to access the API and is only sent to OpenAI.
 
-## Installation
+To get your OpenAI API key:
 
-1. Download the extension and unzip the contents to your `.vscode/extensions` folder.
-2. Restart Visual Studio Code if it was open.
+- Go to [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys). If you don't have an account, you will need to sign up first.
+- Click "Create new secret key" and copy the generated key.
+- Paste the key into VS Code when prompted.
+
+Note: You must have billing set up on your OpenAI account. See the Pricing section below for more information.
+
+### Changing API key
+
+To change your OpenAI API key, use the "ChatGPT: Change OpenAI API key" command in the Command Palette:
+
+- Open the Command Palette by pressing Ctrl + Shift + P.
+- Search for "ChatGPT: Change OpenAI API key" and select it.
+- Enter your new OpenAI API key (refer to the above instructions).
+
+### Pricing
+
+The ChatGPT API is charged by OpenAI at $0.002 / 1K tokens, which is directly charged to your OpenAI account. To use this extension, you must have billing set up on your account. For more on pricing, visit [https://openai.com/pricing#chat](https://openai.com/pricing#chat).
 
 ## Usage
 
@@ -31,17 +46,3 @@ This Visual Studio Code extension uses ChatGPT to process a batch of files based
 
 - `chatgptBatch.processSelected`: Processes the selected folder or files with ChatGPT based on user instructions.
 - `chatgptBatch.changeOpenAIAPIKey`: Changes the stored OpenAI API key.
-
-## Extension Settings
-
-No settings are required.
-
-## Known Issues
-
-None at the moment.
-
-## Release Notes
-
-### 1.0.0
-
-Initial release of the ChatGPT Batch Processor for Visual Studio Code.
