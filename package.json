@@ -3,7 +3,7 @@
   "publisher": "ChadBumstead",
   "displayName": "ChatGPT Batch",
   "description": "Ask ChatGPT to perform multi-file batch changes such as code refactoring",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "icon": "images/chatgpt.png",
   "engines": {
     "vscode": "^1.76.0"

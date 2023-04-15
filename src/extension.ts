@@ -50,7 +50,8 @@ export async function processFile(
   openai: OpenAIApi,
   instructions: string,
 ): Promise<boolean> {
-  showInformationMessage(`Processing file ${uri.fsPath}`);
+  const fileName = uri.fsPath.split('/').pop();
+  showInformationMessage(`Processing file ${fileName}`);
   const fileContent = await vscode.workspace.fs.readFile(uri);
   const messages: ChatCompletionRequestMessage[] = [
     {
@@ -72,9 +73,11 @@ export async function processFile(
       await vscode.workspace.fs.writeFile(uri, Buffer.from(processedContent));
       return true;
     }
-  } catch (error) {
-    showInformationMessage(`Error processing file ${uri.fsPath}`);
-    console.error(error);
+  } catch (error: any) {
+    const message = error.response ? error.response.data.error.message : error.message;
+    const fileName = uri.fsPath.split('/').pop();
+    showInformationMessage(`Error processing file ${fileName}. ${message}`);
+    console.log(message);
   }
   return false;
 }
@@ -94,9 +97,9 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
+      showInformationMessage(`Enter instructions above.`);
       const instructions = await promptForInstructions('Refactor to use Typescript and Prisma.');
-      showInformationMessage(`Enter instructions above. Found ${uris.length} files to process.`);
-      showInformationMessage('ChatGPT is now processing. Please wait.');
+      showInformationMessage(`Found ${uris.length} files to process. Please wait, ChatGPT is now processing`);
       let successCount = 0;
       for (const uri of uris) {
         const success = await processFile(uri, openai, instructions);
@@ -234,4 +237,4 @@ export function handleChatGptResponse(content: string): string {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

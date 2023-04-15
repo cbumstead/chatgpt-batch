@@ -1,8 +1,9 @@
 # Change Log
 
-All notable changes to the "chatgpt-batch" extension will be documented in this file.
+## 0.0.4 - 2023-04-15
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- Improve error handling
+- Simplify messaging
 
 ## 0.0.3 - 2023-04-08
 
