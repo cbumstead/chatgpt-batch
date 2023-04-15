@@ -1,0 +1,17 @@
+name: Create Pull Request
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  creating-pr:
+    name: Create Pull Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create PR
+        uses: funivan/github-autopr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

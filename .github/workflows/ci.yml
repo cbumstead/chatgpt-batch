@@ -1,58 +1,59 @@
 name: CI
-on:
-  push:
-    branches:
-      - "**"
-    tags:
-      - "v*"
+# on:
+#   push:
+#     branches:
+#       - "**"
+#     tags:
+#       - "v*"
 
 jobs:
   build:
     strategy:
       matrix:
         include:
-          - os: windows-latest
-            platform: win32
-            arch: x64
-            npm_config_arch: x64
-          - os: windows-latest
-            platform: win32
-            arch: ia32
-            npm_config_arch: ia32
-          - os: windows-latest
-            platform: win32
-            arch: arm64
-            npm_config_arch: arm
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
-            npm_config_arch: x64
-          - os: ubuntu-latest
-            platform: linux
-            arch: arm64
-            npm_config_arch: arm64
-          - os: ubuntu-latest
-            platform: linux
-            arch: armhf
-            npm_config_arch: arm
-          - os: ubuntu-latest
-            platform: alpine
-            arch: x64
-            npm_config_arch: x64
+          # - os: windows-latest
+          #   platform: win32
+          #   arch: x64
+          #   npm_config_arch: x64
+          # - os: windows-latest
+          #   platform: win32
+          #   arch: ia32
+          #   npm_config_arch: ia32
+          # - os: windows-latest
+          #   platform: win32
+          #   arch: arm64
+          #   npm_config_arch: arm
+          # - os: ubuntu-latest
+          #   platform: linux
+          #   arch: x64
+          #   npm_config_arch: x64
+          # - os: ubuntu-latest
+          #   platform: linux
+          #   arch: arm64
+          #   npm_config_arch: arm64
+          # - os: ubuntu-latest
+          #   platform: linux
+          #   arch: armhf
+          #   npm_config_arch: arm
+          # - os: ubuntu-latest
+          #   platform: alpine
+          #   arch: x64
+          #   npm_config_arch: x64
           - os: macos-latest
             platform: darwin
             arch: x64
             npm_config_arch: x64
-          - os: macos-latest
-            platform: darwin
-            arch: arm64
-            npm_config_arch: arm64
+          # - os: macos-latest
+          #   platform: darwin
+          #   arch: arm64
+          #   npm_config_arch: arm64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: 14.x
+          check-latest: true
       - run: npm install
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -80,21 +81,21 @@ jobs:
         id: get_version
         run: echo ::set-output name=version::$(node -p "require('./package.json').version")
 
-      - name: Check Tag
-        id: check_tag
-        uses: anothrNick/check-tag@v1.1.1
-        with:
-          tag_name: "v${{ steps.get_version.outputs.version }}"
+      # - name: Check Tag
+      #   id: check_tag
+      #   uses: anothrNick/check-tag@v1.1.1
+      #   with:
+      #     tag_name: "v${{ steps.get_version.outputs.version }}"
 
       - name: Create Tag
         id: create_tag
-        uses: anothrNick/github-tag-action@v1.33.0
+        uses: anothrNick/github-tag-action@1.61.0
         with:
           tag_name: "v${{ steps.get_version.outputs.version }}"
           message: "v${{ steps.get_version.outputs.version }} released"
 
       - name: Push Tag
-        uses: anothrNick/github-tag-action@v1.33.0
+        uses: anothrNick/github-tag-action@1.61.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           push: true
