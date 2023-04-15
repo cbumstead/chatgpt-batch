@@ -25,11 +25,12 @@ jobs:
           node-version: 14.x
           check-latest: true
       #Bump version
-      - name: "Automated Version Bump"
-        id: version-bump
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Must be done in PR
+      # - name: "Automated Version Bump"
+      #   id: version-bump
+      #   uses: "phips28/gh-action-bump-version@master"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       #Setup project and package extension
       - run: npm install
