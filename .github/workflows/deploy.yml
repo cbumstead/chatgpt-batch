@@ -24,6 +24,17 @@ jobs:
         with:
           node-version: 14.x
           check-latest: true
+      - run: npm install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm_config_arch: ${{ matrix.npm_config_arch }}
+      - shell: pwsh
+        run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_ENV
+      - run: npx vsce package --target ${{ env.target }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.target }}
+          path: "*.vsix"
       #Bump version
       # TODO: Have to create a PAT for this to work
       # - name: "Automated Version Bump"
@@ -33,7 +44,7 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
       #Setup project and package extension
-      - run: npm install
+      #- run: npm install
       #- run: npm install vsce -g
       #- run: npm run vscode:package
 
