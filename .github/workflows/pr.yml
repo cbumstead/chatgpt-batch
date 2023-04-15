@@ -1,0 +1,20 @@
+name: Create Pull Request
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  creating-pr:
+    name: Create Pull Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Creating Pull Request
+        uses: heitorpolidoro/autocreate-pr@v2
+        env:
+          <user>: ${{ secrets.GITHUB_TOKEN }}
