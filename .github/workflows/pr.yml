@@ -12,6 +12,6 @@ jobs:
 
     steps:
       - name: Create PR
-        uses: funivan/github-autopr@0.2
+        uses: funivan/github-autopr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
