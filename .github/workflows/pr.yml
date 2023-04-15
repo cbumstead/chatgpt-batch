@@ -11,10 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Creating Pull Request
-        uses: heitorpolidoro/autocreate-pr@v2
+      - name: Create PR
+        uses: funivan/github-autopr@0.2
         env:
-          <user>: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
