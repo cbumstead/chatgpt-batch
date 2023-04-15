@@ -15,7 +15,11 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        include:
+          - os: macos-latest
+            platform: darwin
+            arch: x64
+            npm_config_arch: x64
     runs-on: ${{ matrix.os }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
