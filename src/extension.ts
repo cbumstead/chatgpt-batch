@@ -82,7 +82,80 @@ export async function processFile(
   return false;
 }
 
+
+export async function createUnitTest(
+  uri: vscode.Uri,
+  openai: OpenAIApi,
+  instructions: string,
+): Promise<boolean> {
+  const fileName = uri.fsPath.split('/').pop() ?? '';
+  showInformationMessage(`Creating test for ${fileName}`);
+  const fileContent = await vscode.workspace.fs.readFile(uri);
+  const messages: ChatCompletionRequestMessage[] = [
+    {
+      role: 'system',
+      content:
+        'Pretend you are a professional software architect that can create unit tests.  You will receive specific requests create unit tests for code.',
+    },
+    { role: 'user', content: instructions },
+    { role: 'user', content: fileContent.toString() },
+  ];
+  try {
+    const response = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages: messages,
+    });
+    const content = response.data.choices[0].message?.content;
+    if (content) {
+      const processedContent = handleChatGptResponse(content);
+      // Create a new file with the same name as the original file but with .test.js extension
+      const testFileName = fileName.replace('.js', '.test.js');
+      // update the uri to point to the new file
+      const testUri = vscode.Uri.file(uri.fsPath.replace(fileName, testFileName));
+      await vscode.workspace.fs.writeFile(testUri, Buffer.from(processedContent));
+      return true;
+    }
+  } catch (error: any) {
+    const message = error.response ? error.response.data.error.message : error.message;
+    const fileName = uri.fsPath.split('/').pop();
+    showInformationMessage(`Error creating unit test for ${fileName}. ${message}`);
+    console.log(message);
+  }
+  return false;
+}
+
 export function activate(context: vscode.ExtensionContext) {
+  // Register command to create unit tests for the selected files
+  const testsCommand = vscode.commands.registerCommand(
+    'chatgptBatch.createUnitTests',
+    async (ctx) => {
+      const apiKey = await getOpenAIKey(context);
+      const configuration = new Configuration({
+        apiKey: apiKey,
+      });
+      const openai = new OpenAIApi(configuration);
+      const uris = await promptForFilesToProcess(ctx);
+      if (!uris) {
+        showInformationMessage('No files selected for unit tests.');
+        return;
+      }
+
+      showInformationMessage(`Enter instructions above.`);
+      const instructions = await promptForInstructions('Create jest unit tests');
+      showInformationMessage(`Found ${uris.length} files. Please wait, ChatGPT is now creating tests`);
+      let successCount = 0;
+      for (const uri of uris) {
+        const success = await createUnitTest(uri, openai, instructions);
+        if (success) {
+          successCount++;
+        }
+      }
+      showInformationMessage(`ChatGPT processed ${successCount} files.`);
+    },
+  );
+
+
+
   const processCommand = vscode.commands.registerCommand(
     'chatgptBatch.processSelected',
     async (ctx) => {
