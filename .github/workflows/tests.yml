@@ -27,22 +27,25 @@ jobs:
         uses: "actions/checkout@v2"
         with:
           ref: ${{ github.ref }}
-
-  test:
-    runs-on: ubuntu-latest
-    name: Test
-    needs: build
-    if: success()
-    steps:
       #Run project tests
       - run: npm install
       - run: npm run test
-      #   env:
-      #     GITHUB_SHA: ${{ github.sha }}
-      #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      #   if: runner.os == 'Linux'
-      # - run: npm run test:ci
-      #   env:
-      #     GITHUB_SHA: ${{ github.sha }}
-      #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      #   if: runner.os != 'Linux'
+
+  # test:
+  #   runs-on: ubuntu-latest
+  #   name: Test
+  #   needs: build
+  #   if: success()
+  #   steps:
+  #     #Run project tests
+  #     - run: npm install
+  #     - run: npm run test
+  #   env:
+  #     GITHUB_SHA: ${{ github.sha }}
+  #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+  #   if: runner.os == 'Linux'
+  # - run: npm run test:ci
+  #   env:
+  #     GITHUB_SHA: ${{ github.sha }}
+  #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+  #   if: runner.os != 'Linux'
