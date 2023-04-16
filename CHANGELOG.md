@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.1 - 2023-04-15
+
+- Update marketplace keywords
+
 ## 1.0.0 - 2023-04-15
 
 - Add support for creating batch of unit tests

@@ -3,7 +3,7 @@
   "publisher": "ChadBumstead",
   "displayName": "ChatGPT Batch",
   "description": "Ask ChatGPT to perform multi-file batch changes such as code refactoring and unit test generation.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "images/chatgpt.png",
   "engines": {
     "vscode": "^1.76.0"
@@ -11,9 +11,7 @@
   "categories": [
      "Other"
   ],
-  "keywords": [
-    "ChatGPT", "Batch", "Refactoring", "Unit", "Test", "Code", "OpenAI"
-  ],
+  "keywords": ["ai", "openai", "chatgpt", "batch", "refactoring", "testing"],
   "pricing": "Free",
   "activationEvents": [],
   "main": "./out/extension.js",
