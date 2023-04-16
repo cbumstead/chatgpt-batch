@@ -2,8 +2,8 @@
   "name": "vscode-chatgpt-batch",
   "publisher": "ChadBumstead",
   "displayName": "ChatGPT Batch",
-  "description": "Ask ChatGPT to perform multi-file batch changes such as code refactoring",
-  "version": "0.0.4",
+  "description": "Ask ChatGPT to perform multi-file batch changes such as code refactoring and unit test generation.",
+  "version": "1.0.0",
   "icon": "images/chatgpt.png",
   "engines": {
     "vscode": "^1.76.0"
@@ -12,7 +12,7 @@
      "Other"
   ],
   "keywords": [
-    "ChatGPT", "Batch", "Refactoring", "Code", "OpenAI"
+    "ChatGPT", "Batch", "Refactoring", "Unit", "Test", "Code", "OpenAI"
   ],
   "pricing": "Free",
   "activationEvents": [],
@@ -29,6 +29,10 @@
         "title": "Process Files with ChatGPT"
       },
       {
+        "command": "chatgptBatch.createUnitTests",
+        "title": "Create Unit Tests with ChatGPT"
+      },
+      {
         "command": "chatgptBatch.changeOpenAIAPIKey",
         "title": "ChatGPT Batch: Change OpenAI API key"
       }
@@ -37,6 +41,11 @@
       "explorer/context": [
         {
           "command": "chatgptBatch.processSelected",
+          "group": "chatgptBatch.group",
+          "when": "explorerResourceIsFolder || explorerResourceIsFile"
+        },
+        {
+          "command": "chatgptBatch.createUnitTests",
           "group": "chatgptBatch.group",
           "when": "explorerResourceIsFolder || explorerResourceIsFile"
         }
